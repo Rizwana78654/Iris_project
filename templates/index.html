@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IRIS Flower Classification</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body style="background-color:#f4f6f9;">
+
+<div class="container-fluid mt-4">
+
+<h2 class="text-center font-weight-bold mb-4">
+    IRIS Flower Classification
+</h2>
+
+<div class="row">
+
+<!-- ================= FORM ================= -->
+<div class="col-md-4">
+<div class="card shadow-sm">
+<div class="card-body">
+
+<form action="/predict" method="POST">
+
+<input type="number" step="any" name="SepalLengthCm"
+placeholder="Sepal Length (cm)"
+required class="form-control mb-2">
+
+<input type="number" step="any" name="SepalWidthCm"
+placeholder="Sepal Width (cm)"
+required class="form-control mb-2">
+
+<input type="number" step="any" name="PetalLengthCm"
+placeholder="Petal Length (cm)"
+required class="form-control mb-2">
+
+<input type="number" step="any" name="PetalWidthCm"
+placeholder="Petal Width (cm)"
+required class="form-control mb-3">
+
+<button type="submit" name="model" value="knn"
+class="btn btn-primary btn-sm mr-2">KNN</button>
+
+<button type="submit" name="model" value="nb"
+class="btn btn-success btn-sm">Naive Bayes</button>
+
+</form>
+
+<hr>
+
+<h6><strong>Prediction:</strong>
+<span class="text-danger">
+{{ prediction_text or "" }}
+</span></h6>
+
+</div>
+</div>
+</div>
+
+<!-- ================= RESULTS ================= -->
+<div class="col-md-8">
+
+{% if training_data %}
+
+<h5 class="text-center text-info font-weight-bold mb-3">
+{{ selected_model.upper() }} Algorithm Results
+</h5>
+
+<div class="row">
+
+<!-- ===== TRAINING ===== -->
+<div class="col-md-6">
+<div class="card shadow-sm">
+<div class="card-header bg-success text-white text-center">
+Training
+</div>
+<div class="card-body">
+
+<p><strong>Accuracy:</strong>
+{{ training_data.get('accuracy', '') }}
+</p>
+
+<p><strong>Confusion Matrix:</strong></p>
+
+{% if training_data.get('confusion_matrix') %}
+<table class="table table-bordered table-sm">
+{% for row in training_data.get('confusion_matrix', []) %}
+<tr>
+{% for val in row %}
+<td>{{ val }}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<p><strong>Classification Report:</strong></p>
+
+{% if training_data.get('classification_report') %}
+<table class="table table-bordered table-sm">
+<tr>
+<th>Class</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-Score</th>
+</tr>
+
+{% for label, metrics in training_data.get('classification_report', {}).items() %}
+{% if metrics is mapping %}
+<tr>
+<td>{{ label }}</td>
+<td>{{ metrics.get('precision', 0)|round(2) }}</td>
+<td>{{ metrics.get('recall', 0)|round(2) }}</td>
+<td>{{ metrics.get('f1-score', 0)|round(2) }}</td>
+</tr>
+{% endif %}
+{% endfor %}
+
+</table>
+{% else %}
+<p>No Classification Report Available</p>
+{% endif %}
+
+</div>
+</div>
+</div>
+
+<!-- ===== TESTING ===== -->
+<div class="col-md-6">
+<div class="card shadow-sm">
+<div class="card-header bg-primary text-white text-center">
+Testing
+</div>
+<div class="card-body">
+
+<p><strong>Accuracy:</strong>
+{{ testing_data.get('accuracy', '') }}
+</p>
+
+<p><strong>Confusion Matrix:</strong></p>
+
+{% if testing_data.get('confusion_matrix') %}
+<table class="table table-bordered table-sm">
+{% for row in testing_data.get('confusion_matrix', []) %}
+<tr>
+{% for val in row %}
+<td>{{ val }}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<p><strong>Classification Report:</strong></p>
+
+{% if testing_data.get('classification_report') %}
+<table class="table table-bordered table-sm">
+<tr>
+<th>Class</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1-Score</th>
+</tr>
+
+{% for label, metrics in testing_data.get('classification_report', {}).items() %}
+{% if metrics is mapping %}
+<tr>
+<td>{{ label }}</td>
+<td>{{ metrics.get('precision', 0)|round(2) }}</td>
+<td>{{ metrics.get('recall', 0)|round(2) }}</td>
+<td>{{ metrics.get('f1-score', 0)|round(2) }}</td>
+</tr>
+{% endif %}
+{% endfor %}
+
+</table>
+{% else %}
+<p>No Classification Report Available</p>
+{% endif %}
+
+</div>
+</div>
+</div>
+
+</div>
+{% endif %}
+
+</div>
+</div>
+</div>
+
+</body>
+</html>
